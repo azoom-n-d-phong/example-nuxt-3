@@ -6,7 +6,6 @@ definePageMeta({
   layout: 'empty'
 });
 
-const primaryColor = '#284e68';
 const userDefault = {
   id: 0,
   name: '',
@@ -21,7 +20,11 @@ const userDefault = {
     bs: ''
   }
 };
-
+const isShowModal = ref(false);
+const user = ref(userDefault);
+const isEdit = computed(() => !!user.value.id);
+const formRef = ref<VNodeRef | null>(null);
+const requiredRule = [(value: any) => !!value || 'This field is required'];
 const columns = [
   { key: 'id' },
   { key: 'name' },
@@ -33,12 +36,6 @@ const columns = [
   { key: 'actions', label: ' ', width: 80 }
 ];
 
-const isShowModal = ref(false);
-const user = ref(userDefault);
-const isEdit = computed(() => !!user.value.id);
-const formRef = ref<VNodeRef | null>(null);
-const requiredRule = [(value) => !!value || 'This field is required'];
-
 function openModal(index?: number) {
   user.value = index !== undefined ? users[index] : userDefault;
   isShowModal.value = true;
@@ -46,7 +43,6 @@ function openModal(index?: number) {
 function closeModal() {
   isShowModal.value = false;
 }
-
 function handleAddOrEditUser() {
   const isValid = formRef.value.validate();
   if (isValid) {
@@ -57,268 +53,239 @@ function handleAddOrEditUser() {
 </script>
 
 <template>
-  <div class="vuestic-example pa-5">
-    <p class="heading va-title pl-3 pb-2">USERS</p>
-    <va-button
-      :color="primaryColor"
-      class="button mb-3 -add"
-      @click="openModal()"
-    >
-      ADD USER
-    </va-button>
+  <article class="vuestic-example">
+    <h2 class="heading">USERS</h2>
+    <nav class='actions'>
+      <va-button
+        class="button -modalopen"
+        @click="openModal()"
+      >
+        ADD USER
+      </va-button>
+    </nav>
     <va-data-table class="table" :items="users" :columns="columns">
       <template #cell(actions)="{ rowIndex }">
         <va-button
           preset="plain"
           icon="edit"
-          :color="primaryColor"
           @click="openModal(rowIndex)"
         />
-        <va-button preset="plain" icon="delete" :color="primaryColor" />
+        <va-button preset="plain" icon="delete" />
       </template>
     </va-data-table>
-
     <va-modal
-      class="modal-edit-user"
-      :model-value="isShowModal"
-      size="large"
-      background-color="#f9f9f7"
       hide-default-actions
-      :mobile-fullscreen="false"
+      class="user-modal"
+      size="large"
+      v-model="isShowModal"
     >
       <template #header>
-        {{ isEdit ? 'Edit User' : 'Add User' }}
+        <div class='user-modal-header'>
+          <p class='header'>{{ isEdit ? 'Edit User' : 'Add User' }}</p>
+        </div>
       </template>
-      <va-form ref="formRef" class="form">
-        <div class="group -name">
-          <div class="row">
-            <div class="field flex xs12 md5">
-              <div class="content">
-                <va-input
-                  class="input"
-                  v-model="user.name"
-                  :rules="requiredRule"
-                >
-                  <template #prepend>
-                    <label class="label">Name</label>
-                  </template>
-                </va-input>
-              </div>
-            </div>
-            <div class="field flex xs12 md5">
-              <div class="content">
-                <va-input
-                  class="input"
-                  v-model="user.username"
-                  :rules="requiredRule"
-                >
-                  <template #prepend>
-                    <label class="label">Username</label>
-                  </template>
-                </va-input>
-              </div>
-            </div>
-          </div>
-        </div>
-        <h3 class="title my-3">Detail</h3>
-        <div class="group">
-          <div class="row">
-            <div class="field flex xs12 md5">
-              <div class="content">
-                <va-input
-                  color="#fff"
-                  class="input"
-                  v-model="user.email"
-                  :rules="requiredRule"
-                >
-                  <template #prepend>
-                    <label class="label">Email</label>
-                  </template>
-                  <template #append> A </template>
-                </va-input>
-              </div>
-            </div>
-            <div class="field flex xs12 md5">
-              <div class="content">
-                <va-input
-                  class="input"
-                  v-model="user.phone"
-                  :rules="requiredRule"
-                >
-                  <template #prepend>
-                    <label class="label">Phone</label>
-                  </template>
-                  <template #append> B </template>
-                </va-input>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="field flex xs12 md5">
-              <div class="content">
-                <va-input
-                  class="input"
-                  v-model="user.address"
-                  :rules="requiredRule"
-                >
-                  <template #prepend>
-                    <label class="label">Address</label>
-                  </template>
-                  <template #append> C </template>
-                </va-input>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="field flex xs12 md5">
-              <div class="content d-flex align-center">
-                <label class="label">Gender</label>
-                <div class="gender">
-                  <va-radio
-                    :option="1"
-                    label="Male"
-                    :color="primaryColor"
-                    v-model="user.gender"
-                  />
-                  <va-radio
-                    :option="0"
-                    label="Female"
-                    :color="primaryColor"
-                    v-model="user.gender"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <h3 class="title my-3">Company</h3>
-        <div class="group">
-          <div class="row">
-            <div class="field flex xs12 md5">
-              <div class="content">
-                <va-input class="input" v-model="user.company.name">
-                  <template #prepend>
-                    <label class="label">Name</label>
-                  </template>
-                  <template #append> D </template>
-                </va-input>
-              </div>
-            </div>
-            <div class="field flex xs12 md5">
-              <div class="content">
-                <va-input class="input" v-model="user.company.catchPhrase">
-                  <template #prepend>
-                    <label class="label">Catch phrase</label>
-                  </template>
-                  <template #append> E </template>
-                </va-input>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="field flex xs12 md5">
-              <div class="content">
-                <va-input class="input" v-model="user.company.bs">
-                  <template #prepend>
-                    <label class="label">BS</label>
-                  </template>
-                  <template #append> F </template>
-                </va-input>
-              </div>
-            </div>
-          </div>
-        </div>
+      <va-form ref="formRef" class="user-modal-content">
+        <section class="group -name">
+          <label class="input -name">
+            <span class="label">Name</span>
+            <va-input
+              class="input -name"
+              v-model="user.name"
+              :rules="requiredRule"
+            >
+            </va-input>
+          </label>
+          <label class="input -username">
+            <span class="label">Username</span>
+            <va-input
+              class="input -username"
+              v-model="user.username"
+              :rules="requiredRule"
+            >
+            </va-input>
+          </label>
+        </section>
+        <h3 class="title -detail">Detail</h3>
+        <section class="group -detail">
+          <label class="input -email">
+            <span class="label">Email</span>
+            <va-input
+              class="input"
+              v-model="user.email"
+              :rules="requiredRule"
+            >
+              <template #append>A</template>
+            </va-input>
+          </label>
+          <label class="input -phone">
+            <span class="label">Phone</span>
+            <va-input
+              class="input"
+              v-model="user.phone"
+              :rules="requiredRule"
+            >
+              <template #append>B</template>
+            </va-input>
+          </label>
+          <label class="input -address">
+            <span class="label">Address</span>
+            <va-input
+              class="input"
+              v-model="user.address"
+              :rules="requiredRule"
+            >
+              <template #append>C</template>
+            </va-input>
+          </label>
+          <label class="input -gender">
+            <span class="label">Gender</span>
+            <va-radio
+              v-model="user.gender"
+              label="Male"
+              class="radio"
+              :option="1"
+            />
+            <va-radio
+              v-model="user.gender"
+              label="Female"
+              class="radio"
+              :option="0"
+            />
+          </label>
+        </section>
+        <h3 class="title -company">Company</h3>
+        <section class="group -company">
+          <label class="input">
+            <span class="label">Name</span>
+            <va-input class="input" v-model="user.company.name">
+              <template #append>D</template>
+            </va-input>
+          </label>
+          <label class="input">
+            <span class="label">Catch phrase</span>
+            <va-input class="input" v-model="user.company.catchPhrase">
+              <template #append>E</template>
+            </va-input>
+          </label>
+          <label class="input">
+            <span class="label">BS</span>
+            <va-input class="input" v-model="user.company.bs">
+              <template #append>F</template>
+            </va-input>
+          </label>
+        </section>
       </va-form>
       <template #footer>
-        <va-button color="#ccc" class="mr-3" @click="closeModal">
-          CANCEL
-        </va-button>
-        <va-button :color="primaryColor" @click="handleAddOrEditUser">
-          {{ isEdit ? 'SAVE' : 'ADD' }}
-        </va-button>
+        <div class='user-modal-footer'>
+          <va-button class='action -cancel' color='secondary' @click="closeModal">
+            CANCEL
+          </va-button>
+          <va-button class='action -save' @click="handleAddOrEditUser">
+            {{ isEdit ? 'SAVE' : 'ADD' }}
+          </va-button>
+        </div>
       </template>
     </va-modal>
-  </div>
+  </article>
 </template>
 
 <style scoped lang="scss">
-$primaryColor: v-bind(primaryColor);
 .vuestic-example {
-  min-height: 100vh;
   background-color: #f9f9f7;
+  padding: 15px;
+
   > .heading {
+    margin-bottom: 15px;
+    border-left: 3px solid var(--va-primary);
+    border-bottom: 1px solid var(--va-primary);
+    padding: 8px;
     font-size: 1.25rem;
-    border-left: 3px solid $primaryColor;
-    border-bottom: 1px solid $primaryColor;
-    margin-bottom: 12px;
   }
-  > .button.-add {
+  > .actions {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-bottom: 15px;
+  }
+  > .actions > .button.-modalopen {
     --va-button-size: 1.25rem;
-    --va-button-font-weight: 500;
+    --va-button-font-weight: 400;
     --va-button-content-px: 1rem;
     --va-button-content-py: 0.35rem;
     --va-button-border-radius: 0.5rem;
-    float: right;
   }
   > .table {
-    --va-data-table-thead-border: 1px solid $primaryColor;
+    --va-data-table-thead-border: 1px solid var(--va-primary);
     --va-data-table-thead-font-size: 1rem;
     --va-data-table-thead-font-weight: 500;
+    border-radius: 10px;
+    background-color: var(--va-background-element);
     width: 100%;
-    background-color: #fff;
-    border-radius: 20px;
-  }
-  > .table
+
     :deep(
       .va-data-table__table-tbody > .va-data-table__table-tr:not(:last-child)
     ) {
-    border-bottom: 1px solid #284e6880;
-  }
-  :global(
-      .modal-edit-user
-        > .va-modal__container
-        > .va-modal__dialog
-        > .va-modal__inner
-        > .va-modal__header
-    ) {
-    font-size: 1.25rem;
-    font-weight: 500;
-    margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--va-primary);
+    }
   }
 }
-:deep(.group) {
-  padding: 1rem;
-  background-color: #fff;
-  border-radius: 10px;
-  > .row {
-    row-gap: 1rem;
-    @include sm-and-above {
-      column-gap: 5rem;
+.user-modal-header {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 1.25rem;
+}
+.user-modal-content {
+  > .title {
+    margin: 12px 0;
+  }
+  > .group {
+    display: grid;
+    grid-template-columns: repeat(2, 400px);
+    gap: 1rem 5rem;
+    border-radius: 10px;
+    background-color: #fff;
+    padding: 1rem;
+    @include sm-and-below {
+      grid-template-columns: 500px;
+      gap: 1rem 1rem;
     }
   }
-  > .row + .row {
-    margin-top: 1rem;
+  > .group > .input {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
   }
-  > .row > .field > .content > .label {
-    width: calc(6rem + 6px);
-  }
-  > .row > .field > .content > .input {
-    &:not(.va-input-wrapper--error) {
-      --va-input-wrapper-background: #fff;
-      --va-input-wrapper-border-color: rgba(40, 78, 104, 0.5);
-    }
-    > .va-input-wrapper__container > .va-input-wrapper__prepend-inner {
-      width: 6rem;
-      justify-content: flex-start;
-    }
-    > .va-message-list {
-      margin-left: calc(6rem + 6px);
+  > .group > .input.-gender {
+    grid-column: 1 / span 2;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 5px;
+    @include sm-and-below {
+      grid-column: unset;
     }
   }
-  &.-name > .row > .field > .content > .input > .va-input-wrapper__container {
-    @include sm-and-above {
-      width: calc(100% - 15px);
+  > .group > .input.-gender > .label {
+    margin-top: 0;
+  }
+  > .group > .input.-gender > .radio {
+    margin: 0 10px;
+  }
+  > .group > .input > .label {
+    display: inline-block;
+    margin-top: 10px;
+    width: 100px;
+  }
+  > .group > .input > .input {
+    :deep(.va-input-wrapper__container > .va-input-wrapper__field) {
+      --va-form-element-default-width: 150px;
+      border-radius: 4px;
+      max-width: 250px;
     }
+  }
+}
+.user-modal-footer {
+  > .action {
+    margin: 0 5px;
   }
 }
 </style>

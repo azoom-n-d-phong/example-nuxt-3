@@ -19,6 +19,24 @@ export default defineNuxtConfig({
   },
   css: ['@/assets/scss/main.scss'],
   modules: ['@vuestic/nuxt'],
+  vuestic: {
+    config: {
+      colors: {
+        variables: {
+          primary: '#284e68',
+          backgroundPrimary: '#f9f9f7',
+          backgroundSecondary: '#f9f9f7',
+          backgroundElement: '#fff',
+          backgroundBorder: '#284E687F'
+        }
+      },
+      components: {
+        VaInput: {
+          outline: true,
+        }
+      }
+    }
+  },
   vite: {
     css: {
       preprocessorOptions: {

@@ -16,6 +16,11 @@
     @content;
   }
 }
+@mixin sm-and-below {
+  @media (max-width: #{$screen-md-min}) {
+    @content;
+  }
+}
 @mixin sm-and-above {
   @media (min-width: #{$screen-sm-min}) {
     @content;
